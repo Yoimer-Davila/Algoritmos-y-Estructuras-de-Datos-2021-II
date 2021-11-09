@@ -17,7 +17,7 @@ private:
 
         node(T element, node* _next = nullptr, node* _back = nullptr) :
             _element(element), _next(_next), _back(_back) {}
-        ~node() { delete this->_next, this->_back; }
+        ~node() { }
     };
     
     ul _size;
