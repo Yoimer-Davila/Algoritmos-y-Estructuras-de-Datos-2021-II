@@ -153,10 +153,10 @@ public:
     template<typename Function>
     void post_order(Function _function) { this->_post_order(this->root, _function); }
 
-    //erase the value in the BinaryTree if exist
+    //erase the value in the BinaryTree if exist, aun por desarrollar
     void erase(T value) { this->_erase(this->root, value, Compare<T>::higher); }
 
-    //erase the value in the BinaryTree if BoolFunction return true
+    //erase the value in the BinaryTree if BoolFunction return true, aun por desarrollar
     template<typename BoolFunction>
     void erase(T value, BoolFunction _function) { this->_erase(this->root, value, _function); }
 
