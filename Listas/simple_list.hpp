@@ -13,7 +13,7 @@ private:
         T _element;
 
         node(T element, node* _next = nullptr) : _element(element), _next(_next) {}
-        ~node() { delete this->_next; }
+        ~node() {}
     };
     ul _size;
     node* _start;
