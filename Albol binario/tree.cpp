@@ -16,11 +16,11 @@ int main() {
 	
 	//devolvera el mayor valor, puesto que min devuelve el valor mas a la izquierda.
 	//Debido a que el criterio de comparacion envió a los mayores a la izquierda
-	cout << "Min: " << *tree.max() << endl;
+	cout << "Min: " << *tree.min() << endl;
 
 	//devolvera el menor valor, puesto que max devuelve el valor mas a la derecha.
 	//Debido a que el criterio de comparacion envió a los menores a la derecha
-	cout << "Max: " << *tree.min() << endl;
+	cout << "Max: " << *tree.max() << endl;
 	
 	cout << tree.find(new int(10)) << endl;
 
