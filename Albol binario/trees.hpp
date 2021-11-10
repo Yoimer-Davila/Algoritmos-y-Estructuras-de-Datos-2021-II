@@ -27,7 +27,7 @@ struct Compare<T*> {
     //return first parameter >= second parameter
     static bool higher_equal(T*& i,T*& j) { return *i >= *j; }
     //return first parameter <= second parameter
-    static bool less_equal(T*& i, T*& j) { return *i <= *j; }
+    static bool less_equal( T*& i, T*& j) { return *i <= *j; }
     //return first parameter > second parameter
     static bool higher(T*& i, T*& j) { return *i > *j; };
     //return first parameter < second parameter
@@ -53,17 +53,22 @@ private:
     ull _size;
     long _height, a_height;
 
+    //function for send left of tree the less elements
+    bool(*_left)(T& i, T& j);
+
+    //function for erases and finds
+    bool(*_equals)(T& i, T& j);
+
     void c_height() {
         if (this->_height < this->a_height)this->_height = this->a_height;
         this->a_height = 0;
     }
 
-    template<typename BoolFunction>
-    void _insert(Node*& node, T& value, BoolFunction _function) {
+    void _insert(Node*& node, T& value) {
         if (node != nullptr) {
-            if (_function(node->value, value))
-                this->_insert(node->left, value, _function);
-            else this->_insert(node->rigth, value, _function);
+            if (this->_left(node->value, value))
+                this->_insert(node->left, value);
+            else this->_insert(node->rigth, value);
         }
         else {
             node = new Node(value);
@@ -98,14 +103,10 @@ private:
         _function(node->value);
     }
 
-
-    //_function --> for erase value in the tree
-    //_s_function --> for left way, else rigth way
-    template<typename BoolFunction>
-    bool _erase(Node*& node, T& value, BoolFunction _function, BoolFunction _s_function) {
+    bool _erase(Node*& node, T& value) {
         if (node == nullptr) return false;
         
-        if (_function(node->value, value)) {
+        if (this->_equals(node->value, value)) {
             if (node->left == nullptr && node->rigth == nullptr) {
                 node = nullptr;
                 delete node;
@@ -126,27 +127,25 @@ private:
 
                 node->value = aux->value;
 
-                return this->_erase(node->rigth, aux->value, _function, _s_function);
+                return this->_erase(node->rigth, aux->value);
             }
         }
         else {
-            if (_s_function(node->value, value))
-                return this->_erase(node->left, value, _function, _s_function);
-            else return this->_erase(node->rigth, value, _function, _s_function);
+            if (this->_left(node->value, value))
+                return this->_erase(node->left, value);
+            else return this->_erase(node->rigth, value);
         }
     }
 
-    template<typename BoolFunction>
-    bool _find(Node*& node, T& value, BoolFunction _function, BoolFunction _s_function) {
+    bool _find(Node*& node, T& value) {
         if (node == nullptr)
             return false;
-        else if (_function(node->value, value))
+        else if (this->_equals(node->value, value))
             return true;
-        else if (_s_function(node->value, value))
-            return this->_find(node->left, value, _function, _s_function);
-        else return this->_find(node->rigth, value, _function, _s_function);
+        else if (this->_left(node->value, value))
+            return this->_find(node->left, value);
+        else return this->_find(node->rigth, value);
     }
-
 
     T& _min(Node*& node) {
         if (node->left == nullptr)
@@ -163,7 +162,16 @@ private:
     }
 
 public:
-    BinaryTree() : root(nullptr), _size(0), _height(0), a_height(0) {}
+    //Parametros:
+    //_left --> criterio de comparacion para insercion de elementos para tipos primitivos  
+    //_left --> por defecto es bool(T&i,T&j){return i > j}
+    //si left retorna true insertará a la izquierda el elemento, a la derecha si retorna false
+    //_equals --> criterio de comparacion para busqueda y eliminacion de elementos con tipos primitivos
+    //_equals --> por defecto es bool(T&i, T&j){return i == j}
+    //si _equals retorna true será el elemento que se busca o se quiere eliminar
+    BinaryTree(bool(*_left)(T&,T&) = Compare<T>::higher, bool(*_equals)(T&, T&) = Compare<T>::equals)
+        : 
+        root(nullptr), _size(0), _height(0), a_height(0), _left(_left), _equals(_equals) {}
     ~BinaryTree() { delete this->root; }
 
     
@@ -171,20 +179,9 @@ public:
     using pointer = T*;
     using reference = T&;
     
-    //insert left if (T _value > value) == true, right if not
-    //BoolFunction is a binary function(return true or false) whose parameters is a two T types
-    //preferably passed by reference
-    //like this --> bool function(const T& a, const T&b) if T not is a pointer
-    //T is the type that the BinaryTree contain
-    template<typename BoolFunction>
-    void insert(T value, BoolFunction  _function) { 
-        this->_insert(this->root, value, _function); 
-        this->c_height();
-    }
-
-    //insert left if (Node->value > value), right if not
+    //insert left if _function(T&, T&) == true, right if not
     void insert(T value) { 
-        this->_insert(this->root, value, Compare<T>::higher); 
+        this->_insert(this->root, value); 
         this->c_height();
     }
 
@@ -201,16 +198,10 @@ public:
     void post_order(Function _function) { this->_post_order(this->root, _function); }
 
     //erase the value in the BinaryTree if exist
-    bool erase(T value) { return this->_erase(this->root, value, Compare<T>::equals, Compare<T>::higher); }
+    bool erase(T value) { return this->_erase(this->root, value); }
 
-    //erase the value in the BinaryTree if exist
-    //BoolFunction es una funcion booleana que recibe dos elementos de tipo T
-    //_f_equals is the criteria that will be used to remove the value if it returns true
-    //_function is the criterion to go left if it returns true
-    template<typename BoolFunction>
-    bool erase(T value, BoolFunction _f_equals, BoolFunction _function) { this->_erase(this->root, value, _f_equals, _function); }
-
-    bool find(T value) { return this->_find(this->root, value, Compare<T>::equals, Compare<T>::higher); }
+    //return true if value exist in the tree
+    bool find(T value) { return this->_find(this->root, value); }
 
     //returns the minimum element --> returns the value most to the left of the tree
     //if your criteria inserted the minors to the right, use max() as min()
