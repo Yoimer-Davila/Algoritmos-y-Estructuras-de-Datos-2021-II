@@ -7,6 +7,10 @@ using std::rand;
 using std::srand;
 
 //.cpp para las pruebas del encabezado trees.hpp
+//Para el uso de BinaryTree con datos abstractos(creados por el desarrollador) sobrecargar operadores o pasarle funciones al momento 
+//de construir una instancia de la clase BinaryTree. Además, si usará una instancia de esta clase(BinaryTree) en otra clase hacer una declaracion de tipo dinamica
+//e enviale funciones para que el compilador sepa que hacer con las operaciones > e ==, o por su defecto simplemente sobrecarga los operadores 
+//> e == en la clase abstracta que contendrá la clase BinaryTree
 int main() {
 	const int size = 10;
 	srand(time(nullptr));
