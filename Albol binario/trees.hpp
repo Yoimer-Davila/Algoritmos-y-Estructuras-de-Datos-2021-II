@@ -2,7 +2,7 @@
 #define __BINARY_TREE_HPP__
 using ull = unsigned long long;// --> typedef ull unsigned long long;
 
-//contains functions(return a bool value) for basic comparisons:>, <,> =, <= and ==. between two elements of T type
+//contains functions(return a bool value) for basic comparisons:>, <, >=, <= and ==. between two elements of T type
 template<class T>
 struct Compare {
     //true if T is a pointer, false if not
