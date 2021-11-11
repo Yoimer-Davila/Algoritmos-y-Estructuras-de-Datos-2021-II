@@ -1,6 +1,11 @@
 #include <iostrem>
 #include "trees.hpp"
 
+using std::cout;
+using std::endl;
+using std::rand;
+using std::srand;
+
 //.cpp para las pruebas del encabezado trees.hpp
 int main() {
 	const int size = 10;
