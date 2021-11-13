@@ -349,7 +349,8 @@ public:
     
     //erase all elements in the lefts exept the root
     void e_lefts() { this->_e_lefts(this->root); }
-
+    
+    //aplica Function a los elementos del nivel deseado
     template<typename Function>
     void for_level(Function _function, ull level) { this->_s_level(this->root, _function, level); }
 
@@ -359,7 +360,7 @@ public:
         this->root = nullptr;
         this->_size = this->_height = this->a_height = 0; 
     }
-
+    //return root value
     T& v_root() { return this->root->value; }
 };
 
