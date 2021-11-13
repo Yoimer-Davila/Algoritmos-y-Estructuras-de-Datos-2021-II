@@ -249,11 +249,11 @@ public:
 
     void operator=(BinaryTree<T>& tree) { 
         this->~BinaryTree();
-        this->_size = this->a_height = this->_height = 0;
+        this->_size = this->a_height =  0;
         this->_equals = tree._equals;
         this->_left = tree._left;
         this->copy(tree.root);
-        
+        this->_height = tree._height;
     }
 
     using value_type = T;
@@ -349,8 +349,8 @@ public:
     
     //erase all elements in the lefts exept the root
     void e_lefts() { this->_e_lefts(this->root); }
-    
-    //aplica Function a los elementos del nivel deseado
+
+    //Aplica Function a cada elemento del nivel deseado
     template<typename Function>
     void for_level(Function _function, ull level) { this->_s_level(this->root, _function, level); }
 
@@ -360,6 +360,7 @@ public:
         this->root = nullptr;
         this->_size = this->_height = this->a_height = 0; 
     }
+
     //return root value
     T& v_root() { return this->root->value; }
 };
