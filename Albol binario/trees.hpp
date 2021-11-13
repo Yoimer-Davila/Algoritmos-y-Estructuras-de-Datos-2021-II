@@ -170,7 +170,7 @@ private:
 
     void copy(Node*& node) {
         if (node != nullptr) {
-            this->_insert(this->root, node->value);
+            this->_insert(this->root, node->value, this->_left);
             this->copy(node->left);
             this->copy(node->rigth);
         }
