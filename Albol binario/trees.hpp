@@ -1,6 +1,6 @@
 #ifndef __BINARY_TREE_HPP__
 #define __BINARY_TREE_HPP__
-typedef unsigned long long ull;// --> typedef ull unsigned long long;
+using ull = unsigned long long;// --> typedef ull unsigned long long;
 //contains functions(return a bool value) for basic comparisons:>, <,> =, <= and ==. between two elements of T type
 template<class T>
 struct Compare {
