@@ -23,7 +23,7 @@ public:
 		value(value), right(right), left(left), height(height), level(level) {}
 
 	~basic_bynode() { delete this->left, this->right; }
-	//_bynode operator const() { return *this; }
+	
 };
 
 //class template for BynarieTree class
