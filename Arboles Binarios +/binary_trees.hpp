@@ -59,9 +59,9 @@ public:
     }
 };
 
-template<class Ty, typename EvalFunction>
-class BasicBinaryTree;
-
+/*
+EvalFunction is an object or function that receives two parameters of type Ty(passed by reference) and returns a boolean value.
+*/
 template<class Ty, typename EvalFunction>
 class BasicBinaryTree {
 
