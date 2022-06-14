@@ -88,7 +88,7 @@ protected:
 	}
 
 	template<typename Function>
-	Function _in_order(_Node*& node, Function& _function){
+	Function _in_order(_Node*& node, Function& _function) {
 		if (node == nullptr) return _function;
 		this->_in_order(node->left, _function);
 		_function(node->value);
@@ -126,7 +126,7 @@ protected:
 	}
 
 	template<typename Function>
-	Function _lefts(_Node*&node, Function& _function){
+	Function _lefts(_Node*& node, Function& _function) {
 		if (node != nullptr) {
 			_function(node->value);
 			this->_lefts(node->left, _function);
@@ -192,16 +192,16 @@ protected:
 			_Node*& aux = node->right;
 			while (aux->left != nullptr)
 				aux = aux->left;
-			
+
 			return true;
 		}
 		return false;
 	}
 
 	template<typename BoolFunction>
-	bool _erase(_Node*&node, Ty&value, BoolFunction& _equals, BoolFunction& _left){
+	bool _erase(_Node*& node, Ty& value, BoolFunction& _equals, BoolFunction& _left) {
 		if (node == nullptr)return false;
-		
+
 		if (_equals(node->value, value)) {
 			if (this->_e_side(node))
 				return this->_erase(node->right, node->value);
@@ -224,7 +224,7 @@ protected:
 		}
 	}
 
-	void _e_lefts(_Node*&node){
+	void _e_lefts(_Node*& node) {
 		if (node != nullptr) {
 			this->_e_lefts(node->left);
 			if (node != nullptr && node != this->root) {
@@ -234,48 +234,81 @@ protected:
 		}
 	}
 
-	void _c_height(){
+	void _copy(_Node*& node) {
+		if (node != nullptr) {
+			this->_insert(this->root, node->value, this->_left);
+			this->_c_height();
+			this->_copy(node->left);
+			this->_copy(node->right);
+		}
+	}
+
+	void _c_height() {
 		if (this->_height < this->a_height)this->_height = this->a_height;
 		this->a_height = 0;
 	}
 
+	//void _ucfc() {
+	//	auto unvalible = [](const Ty&, const Ty&) {return false; };
+	//	this->_c_left = unvalible;
+	//	this->_c_equals = unvalible;
+	//}
+	//void _ucf() {
+	//	auto unvalible = [](Ty&, Ty&) {return false; };
+	//	this->_left = unvalible;
+	//	this->_equals = unvalible;
+	//}
+
 public:
 
 	BasicBinaryTree(const _Fn& _left, const _Fn& _equals) :
-		root(nullptr), _size(0), _height(0), a_height(0), 
+		root(nullptr), _size(0), _height(0), a_height(0),
 		_left(_left), _equals(_equals)
 	{}
+
+	void operator=(BasicBinaryTree& tree) {
+		this->~BasicBinaryTree();
+		this->_size = this->a_height = 0;
+		this->_left = tree._left;
+		this->_equals = tree._equals;
+		this->_copy(tree.root);
+	}
+	void operator=(BasicBinaryTree*& tree) {
+		this->~BasicBinaryTree();
+		this->_size = this->a_height = 0;
+		this->_copy(tree->root);
+	}
 
 	using value_type = Ty;
 	using pointer = Ty*;
 	using reference = Ty&;
 
-	
+	//apply function to all elements in the tree in order
 	template<typename Function>
 	Function in_order(Function _function) { return this->_in_order(this->root, _function); }
-
+	//apply function to all elements in the tree in reverse order (contrary to in_order)
 	template<typename Function>
 	Function rin_order(Function _function) { return this->_rin_order(this->root, _function); }
-
+	//apply function to all elements in the tree in pre order
 	template<typename Function>
 	Function pre_order(Function _function) { return this->_pre_order(this->root, _function); }
-
+	//apply function to all elements in the tree in post order
 	template<typename Function>
 	Function post_order(Function _function) { return this->_post_order(this->root, _function); }
-
+	//apply function only to more left elements in the tree
 	template<typename Function>
 	Function lefts(Function _function) { if (this->root != nullptr) return this->_lefts(this->root->left, _function); return _function; }
-
+	//apply function only to more right elements in the tree
 	template<typename Function>
 	Function rights(Function _function) { if (this->root != nullptr) return this->_rights(this->root, _function); return _function; }
-
+	//apply function only to more left elements in the tree, incluing the root
 	template<typename Function>
 	Function r_lefts(Function _function) { return this->_lefts(this->root, _function); }
-
+	//apply function only to more right elements in the tree, incluing the root
 	template<typename Function>
 	Function r_rights(Function _function) { return this->_rights(this->root, _function); }
-
-	bool erase(const Ty& value) { 
+	//return true if erase the first value equal to value in the tree, else false
+	bool erase(const Ty& value) {
 		if (this->_erase(this->root, const_cast<Ty&>(value), this->_equals, this->_left)) {
 			--this->_size;
 			return true;
@@ -283,33 +316,33 @@ public:
 
 		return false;
 	}
-	
+	//erase the more right elements in the tree
 	void e_rights() { this->_e_rights(this->root); }
-
+	//erase the more left elements in the tree
 	void e_lefts() { this->_e_lefts(this->root); }
-
+	//return true if any element is equal to value else false
 	bool find(const Ty& value) { return this->_find(this->root, const_cast<Ty&>(value), this->_equals, this->_left) != nullptr; }
-
-	Ty& v_find(const Ty& value){ 
+	//return the first element equal to value
+	Ty& v_find(const Ty& value) {
 		_Node* aux = this->_find(this->root, const_cast<Ty&>(value), this->_equals, this->_left);
 
 		return aux != nullptr ? aux->value : const_cast<Ty&>(value);
 	}
-
+	//return the element more left
 	Ty& min() { return this->_min(this->root); }
-
+	//return the element more right
 	Ty& max() { return this->_max(this->root); }
-
+	//return size of the tree
 	ull size() const { return this->_size; }
-
+	//return height of the tree
 	ll height() const { return this->_height; }
-
+	//return true if tree is empty else false
 	bool empty() const { return this->_size == 0; }
 
 	template<typename Function>
 	Function for_level(Function _function, const ull& level) { return this->_s_level(this->root, _function, level); }
 
-	void clear() { 
+	void clear() {
 		delete this->root;
 		this->root = nullptr;
 		this->_size = this->_height = this->a_height = 0;
@@ -329,17 +362,16 @@ public:
 
 	template<typename BoolFunction>
 	void insert(const Ty& value, BoolFunction _function) { this->_insert(this->root, const_cast<Ty&>(value), _function); this->_c_height(); }
-
 };
 
-template<class Ty, typename EvalFunction = ByFunction<Ty>>
+template<class Ty, typename EvalFunction>
 class BasicAvlTree : public BasicBinaryTree<Ty, EvalFunction> {
 
 protected:
 	using _Fn = EvalFunction;
 	using _Node = basic_bynode<Ty>;
-	
-	void _right_rotation(_Node*& node){
+
+	void _right_rotation(_Node*& node) {
 		_Node* father = node->left;
 		node->left = father->right;
 		father->right = node;
@@ -378,9 +410,9 @@ protected:
 			this->_left_rotation(node);
 		}
 	}
-	
+
 	template<typename BoolFunction>
-	void _avl_insert(_Node*& node, Ty& value, BoolFunction& _function, ull level = 0,  ull height = 0) {
+	void _avl_insert(_Node*& node, Ty& value, BoolFunction& _function, ull level = 0, ull height = 0) {
 		if (node != nullptr) {
 			node->height = height;
 			if (_function(node->value, value))
@@ -396,8 +428,19 @@ protected:
 	}
 
 public:
-	BasicAvlTree(const _Fn& _left, const _Fn& _equals) : BasicBinaryTree<Ty, EvalFunction>(_left, _equals) {}
-	~BasicAvlTree() { delete this->root; this->root = nullptr; }
+	BasicAvlTree(const _Fn& _left, const _Fn& _equals) : BasicBinaryTree<Ty, EvalFunction>(_left, _equals)
+	{}
+};
+
+template<class Ty, typename EvalFunction = ByFunction<Ty>>
+class AvlTree : public BasicAvlTree<Ty, EvalFunction> {
+
+private:
+	using _Fn = EvalFunction;
+
+public:
+	AvlTree(const _Fn& _left, const _Fn& _equals) : BasicAvlTree<Ty, EvalFunction>(_left, _equals) {}
+	~AvlTree() { delete this->root; this->root = nullptr; }
 
 	void insert(const Ty& value) {
 		this->_avl_insert(this->root, const_cast<Ty&>(value), this->_left, 0, this->_height + 1);
@@ -409,7 +452,6 @@ public:
 		this->_avl_insert(this->root, const_cast<Ty&>(value), _function, 0, this->_height + 1);
 		this->_c_height();
 	}
-
 };
 
 #endif //__BASIC_BINARY_TREE_HPP__
